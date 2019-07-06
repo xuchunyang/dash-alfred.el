@@ -63,6 +63,7 @@
      ,(lambda (i)
         (call-process "open" nil nil nil "-g" (format "dash-workflow-callback://%d" i))))))
 
+;;;###autoload
 (defun dash-alfred-helm ()
   "Search Dash Documentation with Helm."
   (interactive)
@@ -85,6 +86,7 @@
 
 (declare-function ivy-read "ivy")
 
+;;;###autoload
 (defun dash-alfred-ivy ()
   "Search Dash Documentation with Ivy."
   (interactive)
