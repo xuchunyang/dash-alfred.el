@@ -38,7 +38,7 @@
 (defun dash-alfred-workflow-check ()
   (unless (and dash-alfred-workflow
                (file-exists-p dash-alfred-workflow))
-    (user-error "Can't find dashAlfredWorkflow, is Dash-Alfred-Workflow installed?")))
+    (user-error "Can't find dashAlfredWorkflow")))
 
 
 ;;; * Helm
@@ -51,9 +51,11 @@
   (with-temp-buffer
     (if (zerop (call-process dash-alfred-workflow nil t nil helm-pattern))
         (cl-loop for i from 0
-                 for item in (dom-children (libxml-parse-xml-region (point-min) (point-max)))
+                 for item in (dom-children (libxml-parse-xml-region
+                                            (point-min) (point-max)))
                  for title = (dom-text (dom-child-by-tag item 'title))
-                 for subtitle = (dom-text (car (last (dom-by-tag item 'subtitle))))
+                 for subtitle = (dom-text
+                                 (car (last (dom-by-tag item 'subtitle))))
                  collect (cons (concat title "\n" subtitle) i))
       (list "dashAlfredWorkflow failed:"
             (buffer-string)))))
@@ -61,7 +63,8 @@
 (defvar dash-alfred-helm-actions
   `(("Open in Dash" .
      ,(lambda (i)
-        (call-process "open" nil nil nil "-g" (format "dash-workflow-callback://%d" i))))))
+        (call-process "open" nil nil nil "-g"
+                      (format "dash-workflow-callback://%d" i))))))
 
 ;;;###autoload
 (defun dash-alfred-helm ()
@@ -98,9 +101,11 @@
      (with-temp-buffer
        (if (zerop (call-process dash-alfred-workflow nil t nil str))
            (cl-loop for i from 0
-                    for item in (dom-children (libxml-parse-xml-region (point-min) (point-max)))
+                    for item in (dom-children (libxml-parse-xml-region
+                                               (point-min) (point-max)))
                     for title = (dom-text (dom-child-by-tag item 'title))
-                    for subtitle = (dom-text (car (last (dom-by-tag item 'subtitle))))
+                    for subtitle = (dom-text
+                                    (car (last (dom-by-tag item 'subtitle))))
                     collect (propertize (concat title " " subtitle) 'i i))
          (list
           "Error: dashAlfredWorkflow fails"
@@ -109,7 +114,8 @@
    :dynamic-collection t
    :action (lambda (x)
              (call-process "open" nil nil nil "-g"
-                           (format "dash-workflow-callback://%d" (get-text-property 0 'i x))))))
+                           (format "dash-workflow-callback://%d"
+                                   (get-text-property 0 'i x))))))
 
 (provide 'dash-alfred)
 ;;; dash-alfred.el ends here
