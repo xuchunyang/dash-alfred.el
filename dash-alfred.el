@@ -28,7 +28,7 @@
 
 ;;; Code:
 
-(require 'dom)
+(require 'dom)                          ; Added in Emacs 25.1
 
 (defvar dash-alfred-workflow
   (car (file-expand-wildcards
