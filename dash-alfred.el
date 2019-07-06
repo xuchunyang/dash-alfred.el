@@ -40,7 +40,9 @@
                (file-exists-p dash-alfred-workflow))
     (user-error "Can't find dashAlfredWorkflow, is Dash-Alfred-Workflow installed?")))
 
+
 ;;; * Helm
+
 (declare-function helm "helm")
 (declare-function helm-make-source "helm-source")
 (defvar helm-pattern)
@@ -57,7 +59,7 @@
             (buffer-string)))))
 
 (defvar dash-alfred-helm-actions
-  `(("Open" .
+  `(("Open in Dash" .
      ,(lambda (i)
         (call-process "open" nil nil nil "-g" (format "dash-workflow-callback://%d" i))))))
 
@@ -75,7 +77,8 @@
      :volatile t
      :match #'identity
      :nohighlight t
-     :requires-pattern 1)))
+     :requires-pattern 1)
+   :buffer "*helm dash alfred*"))
 
 (provide 'dash-alfred)
 ;;; dash-alfred.el ends here
