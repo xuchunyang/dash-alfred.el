@@ -80,5 +80,34 @@
      :requires-pattern 1)
    :buffer "*helm dash alfred*"))
 
+
+;;; * Ivy
+
+(declare-function ivy-read "ivy")
+
+(defun dash-alfred-ivy ()
+  "Search Dash Documentation with Ivy."
+  (interactive)
+  (dash-alfred-workflow-check)
+  (require 'ivy)
+  (ivy-read
+   "Search Dash: "
+   (lambda (str)
+     (with-temp-buffer
+       (if (zerop (call-process dash-alfred-workflow nil t nil str))
+           (cl-loop for i from 0
+                    for item in (dom-children (libxml-parse-xml-region (point-min) (point-max)))
+                    for title = (dom-text (dom-child-by-tag item 'title))
+                    for subtitle = (dom-text (car (last (dom-by-tag item 'subtitle))))
+                    collect (propertize (concat title " " subtitle) 'i i))
+         (list
+          "Error: dashAlfredWorkflow fails"
+          ""
+          (split-string (buffer-string) "\n")))))
+   :dynamic-collection t
+   :action (lambda (x)
+             (call-process "open" nil nil nil "-g"
+                           (format "dash-workflow-callback://%d" (get-text-property 0 'i x))))))
+
 (provide 'dash-alfred)
 ;;; dash-alfred.el ends here
