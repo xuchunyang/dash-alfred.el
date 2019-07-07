@@ -38,6 +38,7 @@
   "Path to dashAlfredWorkflow.")
 
 (defun dash-alfred-workflow-check ()
+  "Ensure dashAlfredWorkflow is available."
   (unless (and dash-alfred-workflow
                (file-exists-p dash-alfred-workflow))
     (user-error "Can't find dashAlfredWorkflow")))
@@ -50,6 +51,7 @@
 (defvar helm-pattern)
 
 (defun dash-alfred-helm-candidates ()
+  "Build helm candidates."
   (with-temp-buffer
     (if (zerop (call-process dash-alfred-workflow nil t nil helm-pattern))
         (cl-loop for i from 0
@@ -66,7 +68,8 @@
   `(("Open in Dash" .
      ,(lambda (i)
         (call-process "open" nil nil nil "-g"
-                      (format "dash-workflow-callback://%d" i))))))
+                      (format "dash-workflow-callback://%d" i)))))
+  "Actions for `dash-alfred-helm'.")
 
 ;;;###autoload
 (defun dash-alfred-helm ()
