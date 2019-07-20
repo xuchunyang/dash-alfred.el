@@ -124,7 +124,7 @@
               (propertize (concat title " " subtitle) 'i i))
             (dash-alfred-workflow-parse-output))
          (list
-          "Error: dashAlfredWorkflow fails"
+          "Error: dashAlfredWorkflow failed"
           ""
           (split-string (buffer-string) "\n")))))
    :dynamic-collection t
