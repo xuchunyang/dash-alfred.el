@@ -32,10 +32,17 @@
 
 (require 'dom)                          ; Added in Emacs 25.1
 
-(defvar dash-alfred-workflow
-  (car (file-expand-wildcards
-        "~/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.*/dashAlfredWorkflow"))
-  "Path to dashAlfredWorkflow.")
+(defgroup dash-alfred nil
+  "Search Dash documentation via Dash-Alfred-Workflow."
+  :group 'external)
+
+(defcustom dash-alfred-workflow
+  (car
+   (file-expand-wildcards
+    "~/Library/Application Support/Alfred/Alfred.alfredpreferences/workflows/user.workflow.*/dashAlfredWorkflow"))
+  "Path to dashAlfredWorkflow."
+  :group 'dash-alfred
+  :type 'string)
 
 (defun dash-alfred-workflow-check ()
   "Ensure dashAlfredWorkflow is available."
