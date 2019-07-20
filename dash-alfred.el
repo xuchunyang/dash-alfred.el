@@ -50,6 +50,16 @@
                (file-exists-p dash-alfred-workflow))
     (user-error "Can't find dashAlfredWorkflow")))
 
+(defun dash-alfred-workflow-parse-output ()
+  "Parse the output of dashAlfredWorkflow."
+  (cl-loop for i from 0
+           for item in (dom-children (libxml-parse-xml-region
+                                      (point-min) (point-max)))
+           for title = (dom-text (dom-child-by-tag item 'title))
+           for subtitle = (dom-text
+                           (car (last (dom-by-tag item 'subtitle))))
+           collect (list title subtitle i)))
+
 
 ;;; * Helm
 
@@ -61,13 +71,10 @@
   "Build helm candidates."
   (with-temp-buffer
     (if (zerop (call-process dash-alfred-workflow nil t nil helm-pattern))
-        (cl-loop for i from 0
-                 for item in (dom-children (libxml-parse-xml-region
-                                            (point-min) (point-max)))
-                 for title = (dom-text (dom-child-by-tag item 'title))
-                 for subtitle = (dom-text
-                                 (car (last (dom-by-tag item 'subtitle))))
-                 collect (cons (concat title "\n" subtitle) i))
+        (mapcar
+         (pcase-lambda (`(,title ,subtitle ,i))
+           (cons (concat title "\n" subtitle) i))
+         (dash-alfred-workflow-parse-output))
       (list "dashAlfredWorkflow failed:"
             (buffer-string)))))
 
@@ -112,13 +119,10 @@
    (lambda (str)
      (with-temp-buffer
        (if (zerop (call-process dash-alfred-workflow nil t nil str))
-           (cl-loop for i from 0
-                    for item in (dom-children (libxml-parse-xml-region
-                                               (point-min) (point-max)))
-                    for title = (dom-text (dom-child-by-tag item 'title))
-                    for subtitle = (dom-text
-                                    (car (last (dom-by-tag item 'subtitle))))
-                    collect (propertize (concat title " " subtitle) 'i i))
+           (mapcar
+            (pcase-lambda (`(,title ,subtitle ,i))
+              (propertize (concat title " " subtitle) 'i i))
+            (dash-alfred-workflow-parse-output))
          (list
           "Error: dashAlfredWorkflow fails"
           ""
