@@ -85,6 +85,27 @@
                       (format "dash-workflow-callback://%d" i)))))
   "Actions for `dash-alfred-helm'.")
 
+(declare-function dash-at-point-guess-docset "dash-at-point")
+(defvar dash-at-point-legacy-mode)
+
+(defun dash-alfred-guess-docset ()
+  (if (fboundp 'dash-at-point-guess-docset)
+      (let ((dash-at-point-legacy-mode t))
+        (dash-at-point-guess-docset))
+    (replace-regexp-in-string (rx "-mode" eos) "" (symbol-name major-mode))))
+
+(defun dash-alfred-guess-input ()
+  "Prepopulate initial input for `dash-alfred-helm' and `dash-alfred-ivy'.
+
+It's based on the current buffer's major mode and the point.
+If there is not suitable guess, return nil."
+  (let ((docset (dash-alfred-guess-docset))
+        (thing (or (thing-at-point 'symbol t)
+                   (current-word))))
+    (if (or docset thing)
+        (string-join (delq nil (list docset thing)) ":")
+      nil)))
+
 ;;;###autoload
 (defun dash-alfred-helm ()
   "Search Dash Documentation with Helm."
@@ -101,6 +122,7 @@
      :match #'identity
      :nohighlight t
      :requires-pattern 1)
+   :input (dash-alfred-guess-input)
    :buffer "*helm dash alfred*"))
 
 
@@ -127,6 +149,7 @@
           "Error: dashAlfredWorkflow failed"
           ""
           (split-string (buffer-string) "\n")))))
+   :initial-input (dash-alfred-guess-input)
    :dynamic-collection t
    :action (lambda (x)
              (call-process "open" nil nil nil "-g"
